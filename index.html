@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoca.AI - Sistema de Gestão Inteligente</title>
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/sidebar-styles.css">
+    <link rel="stylesheet" href="css/theme-dark.css">
+    <link rel="stylesheet" href="css/sidebar-overrides.css">
+    <link rel="stylesheet" href="css/sidebar-settings.css">
+    <link rel="stylesheet" href="css/theme-notifications.css">
+    <link rel="stylesheet" href="css/charts-styles.css">
+    <link rel="stylesheet" href="css/advanced-animations.css">
+    <link rel="stylesheet" href="css/global-search.css">
+    <link rel="stylesheet" href="css/dashboard-widgets.css">
+    <link rel="stylesheet" href="css/offline-manager.css">
+    <link rel="stylesheet" href="css/dashboard-styles.css">
+    <link rel="stylesheet" href="css/chat-styles.css">
+    <link rel="stylesheet" href="css/chat-layout.css">
+    <link rel="stylesheet" href="css/chat-history.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset de estilos para o corpo */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f3f4f6;
+            color: #111827;
+            line-height: 1.5;
+        }
+        
+        /* Estilos para o container principal */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f3f4f6;
+        }
+        
+        /* Sidebar principal */
+        .sidebar {
+            width: 260px;
+            background-color: #1e293b;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            z-index: 30;
+            position: relative;
+        }
+        
+        /* Conteúdo principal */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: margin-left 0.3s ease;
+        }
+        
+        /* Quando a sidebar estiver recolhida */
+        .main-content.sidebar-collapsed {
+            margin-left: 60px;
+        }
+        
+        /* Header principal */
+        .main-header {
+            height: 80px;
+            background-color: #fff;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e7eb;
+            z-index: 20;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .header-left h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        /* Botão de menu mobile */
+        .mobile-menu-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background-color: #fff;
+            color: #4b5563;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mobile-menu-btn:hover {
+            background-color: #f9fafb;
+        }
+        
+        /* Barra de pesquisa */
+        .search-container {
+            position: relative;
+            width: 280px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 14px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 12px 10px 40px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #111827;
+            background-color: #f9fafb;
+            transition: all 0.2s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #a5b4fc;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            background-color: #fff;
+        }
+        
+        /* Botões do cabeçalho */
+        .header-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background-color: #fff;
+            color: #4b5563;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.2s;
+        }
+        
+        .header-btn:hover {
+            background-color: #f9fafb;
+            color: #4f46e5;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background-color: #ef4444;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+        }
+        
+        /* Avatar do usuário */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            .search-container {
+                width: 240px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                transform: translateX(-100%);
+                z-index: 40;
+            }
+            
+            .sidebar.visible {
+                transform: translateX(0);
+                box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .search-container {
+                display: none;
+            }
+            
+            .search-container.mobile-visible {
+                display: block;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                padding: 16px;
+                background-color: #fff;
+                border-bottom: 1px solid #e5e7eb;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                z-index: 10;
+            }
+            
+            .search-container.mobile-visible .search-input {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-header {
+                padding: 0 16px;
+            }
+            
+            .header-buttons {
+                gap: 8px;
+            }
+            
+            .header-btn {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .user-avatar {
+                width: 36px;
+                height: 36px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+</head>
+<body>
+    <script>
+        // Verificar se o usuário está autenticado
+        function checkAuth() {
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            try {
+                const user = JSON.parse(userData);
+                if (!user.email) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+            } catch (error) {
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+        
+        // Executar verificação imediatamente
+        checkAuth();
+    </script>
+    
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <img src="ce871213-1168-48f7-b65f-4681ac5f7386.jpg" alt="Estoca.AI Logo" class="logo-img">
+                    <span class="logo-text">Estoca.AI</span>
+                </div>
+                <div class="sidebar-controls">
+                    <button class="sidebar-settings-btn" title="Configurações da Sidebar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="theme-toggle" id="themeToggle" title="Alternar entre modo claro e escuro">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                        <span class="theme-text" id="themeToggleText">Escuro</span>
+                    </button>
+                    <button class="sidebar-toggle advanced-toggle" title="Recolher/Expandir barra lateral (Ctrl+B)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3 class="nav-title">Dashboard</h3>
+                    <a href="#" class="nav-item active" data-section="dashboard">
+                        <i class="fas fa-home"></i>
+                        <span>Início</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="sales">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Vendas</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="inventory">
+                        <i class="fas fa-boxes"></i>
+                        <span>Estoque</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="customers">
+                        <i class="fas fa-users"></i>
+                        <span>Clientes</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <h3 class="nav-title">Relatórios</h3>
+                    <a href="#" class="nav-item" data-section="reports">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Relatórios Gerais</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="analytics">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Análise de Dados</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="export">
+                        <i class="fas fa-download"></i>
+                        <span>Exportar Dados</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <h3 class="nav-title">Funcionalidades</h3>
+                    <a href="#" class="nav-item construction" data-section="requests">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Requisições</span>
+                        <span class="badge">Em Construção</span>
+                    </a>
+                    <a href="#" class="nav-item construction" data-section="rfid">
+                        <i class="fas fa-wifi"></i>
+                        <span>Rastreio RFID</span>
+                        <span class="badge">Em Construção</span>
+                    </a>
+
+                </div>
+                
+                <div class="nav-section">
+                    <h3 class="nav-title">Configurações</h3>
+                    <a href="#" class="nav-item" data-section="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Configurações</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="profile">
+                        <i class="fas fa-user"></i>
+                        <span>Perfil</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">Usuário</span>
+                        <span class="user-role" id="userRole">Administrador</span>
+                    </div>
+                    <button class="user-menu-btn" id="userMenuBtn">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <div class="user-menu-header">
+                        <div class="user-menu-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-menu-info">
+                            <span class="user-menu-name" id="userMenuName">Usuário</span>
+                            <span class="user-menu-email" id="userMenuEmail">usuario@estoca.ai</span>
+                        </div>
+                    </div>
+                    <div class="user-menu-actions">
+                        <a href="#" class="user-menu-item" data-section="profile">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Meu Perfil</span>
+                        </a>
+                        <a href="#" class="user-menu-item" data-section="settings">
+                            <i class="fas fa-cog"></i>
+                            <span>Configurações</span>
+                        </a>
+                        <div class="user-menu-divider"></div>
+                        <button class="user-menu-item logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Sair</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1>Mensagens</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" placeholder="Pesquisar mensagens..." class="search-input">
+                    </div>
+                    <div class="header-buttons">
+                        <button class="header-btn" id="notificationsBtn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge">3</span>
+                        </button>
+                        <div class="user-avatar">
+                            <img src="https://ui-avatars.com/api/?name=Joao&background=4f46e5&color=fff" alt="User">
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="chat-layout" style="width: 100%; height: calc(100vh - 80px);">
+                <div class="mobile-chat-header" id="mobileChatHeader">
+                    <button class="back-button" id="mobileBackButton">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="chat-title" id="mobileChatTitle">Suporte Estoca.AI</h2>
+                    <button class="menu-button" id="mobileMenuButton">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+                
+                <div class="chat-sidebar" id="chatSidebar" style="width: 380px;">
+                    <div class="chat-sidebar-header">
+                        <h2>Suporte Estoca.AI</h2>
+                        <button class="new-chat-btn" title="Nova conversa">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Abas da Sidebar -->
+                    <div class="sidebar-tabs">
+                        <button class="tab-btn active" data-tab="support">
+                            <i class="fas fa-robot"></i>
+                            <span>Suporte</span>
+                        </button>
+                        <button class="tab-btn" data-tab="history">
+                            <i class="fas fa-history"></i>
+                            <span>Histórico</span>
+                        </button>
+                        <button class="tab-btn" data-tab="details">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Detalhes</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Conteúdo das Abas -->
+                    <div class="sidebar-content">
+                        <!-- Aba Suporte -->
+                        <div class="tab-content active" id="support-tab">
+                            <div class="support-info">
+                                <div class="support-card">
+                                    <div class="support-avatar">
+                                        <img src="https://ui-avatars.com/api/?name=Suporte&background=4f46e5&color=fff" alt="Suporte">
+                                    </div>
+                                    <div class="support-details">
+                                        <h3>Assistente Virtual</h3>
+                                        <p class="status online">Online 24/7</p>
+                                        <p class="description">Sou seu assistente virtual do Estoca.AI. Posso ajudar com:</p>
+                                        <ul class="support-features">
+                                            <li><i class="fas fa-chart-line"></i> Relatórios e análises</li>
+                                            <li><i class="fas fa-cog"></i> Configurações do sistema</li>
+                                            <li><i class="fas fa-question-circle"></i> Dúvidas técnicas</li>
+                                            <li><i class="fas fa-lightbulb"></i> Dicas e otimizações</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Aba Histórico -->
+                        <div class="tab-content" id="history-tab">
+                            <div class="history-section">
+                                <h3>Histórico de Conversas</h3>
+                                <div class="conversation-list">
+                                    <div class="conversation-item active">
+                                        <div class="conversation-avatar">
+                                            <img src="https://ui-avatars.com/api/?name=Suporte&background=4f46e5&color=fff" alt="Suporte">
+                                        </div>
+                                        <div class="conversation-details">
+                                            <h4>Suporte Geral</h4>
+                                            <p>Última mensagem: Hoje às 14:30</p>
+                                            <span class="conversation-status online">Ativa</span>
+                                        </div>
+                                    </div>
+                                    <div class="conversation-item">
+                                        <div class="conversation-avatar">
+                                            <img src="https://ui-avatars.com/api/?name=Suporte&background=4f46e5&color=fff" alt="Suporte">
+                                        </div>
+                                        <div class="conversation-details">
+                                            <h4>Configuração Sistema</h4>
+                                            <p>Última mensagem: Ontem às 16:45</p>
+                                            <span class="conversation-status">Encerrada</span>
+                                        </div>
+                                    </div>
+                                    <div class="conversation-item">
+                                        <div class="conversation-avatar">
+                                            <img src="https://ui-avatars.com/api/?name=Suporte&background=4f46e5&color=fff" alt="Suporte">
+                                        </div>
+                                        <div class="conversation-details">
+                                            <h4>Relatórios</h4>
+                                            <p>Última mensagem: 15/01 às 10:20</p>
+                                            <span class="conversation-status">Encerrada</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Aba Detalhes -->
+                        <div class="tab-content" id="details-tab">
+                            <div class="details-section">
+                                <div class="user-card">
+                                    <div class="user-avatar large">
+                                        <img src="https://ui-avatars.com/api/?name=Suporte&background=4f46e5&color=fff" alt="Suporte">
+                                    </div>
+                                    <h3>Suporte Estoca.AI</h3>
+                                    <p class="user-status online">Online 24/7</p>
+                                    <p class="user-email">suporte@estoca.ai</p>
+                                </div>
+                                
+                                <div class="info-section">
+                                    <h4>Recursos Úteis</h4>
+                                    <ul class="resource-list">
+                                        <li>
+                                            <i class="fas fa-file-alt"></i>
+                                            <span>Relatórios</span>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-cog"></i>
+                                            <span>Configurações</span>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-question-circle"></i>
+                                            <span>Ajuda</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="info-section">
+                                    <h4>Arquivos Compartilhados</h4>
+                                    <div class="file-list">
+                                        <div class="file-item">
+                                            <div class="file-icon">
+                                                <i class="far fa-file-pdf"></i>
+                                            </div>
+                                            <div class="file-info">
+                                                <span class="file-name">relatorio_vendas_julho.pdf</span>
+                                                <span class="file-size">2.4 MB</span>
+                                            </div>
+                                            <button class="file-download">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </div>
+                                        <div class="file-item">
+                                            <div class="file-icon">
+                                                <i class="far fa-file-excel"></i>
+                                            </div>
+                                            <div class="file-info">
+                                                <span class="file-name">detalhes_estoque.xlsx</span>
+                                                <span class="file-size">1.8 MB</span>
+                                            </div>
+                                            <button class="file-download">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-messages" id="chatMessagesContainer">
+                    <div class="chat-header">
+                        <div class="chat-partner">
+                            <div class="chat-avatar">
+                                <img src="https://ui-avatars.com/api/?name=Suporte&background=4f46e5&color=fff" alt="Suporte">
+                            </div>
+                            <div class="chat-details">
+                                <h2>Assistente Virtual Estoca.AI</h2>
+                                <p class="status-badge online">Online 24/7</p>
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="action-btn" id="chatHistoryBtn" title="Histórico de consultas">
+                                <i class="fas fa-history"></i>
+                            </button>
+                            <button class="action-btn" title="Configurações">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                            <button class="action-btn" title="Mais opções">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="messages-container" id="messagesContainer">
+                        <div class="message received">
+                            <div class="message-avatar">
+                                <img src="https://ui-avatars.com/api/?name=Suporte&background=4f46e5&color=fff" alt="Suporte">
+                            </div>
+                            <div class="message-content">
+                                <p>👋 Olá! Sou o assistente virtual do Estoca.AI, seu parceiro para otimizar a gestão do seu negócio!</p>
+                                <p>Estou aqui para ajudar você com:</p>
+                                <ul class="support-list">
+                                    <li>📊 Relatórios e análises avançadas</li>
+                                    <li>⚙️ Configurações e personalização</li>
+                                    <li>❓ Dúvidas técnicas e suporte</li>
+                                    <li>💡 Dicas para otimizar seu negócio</li>
+                                    <li>🚀 Novas funcionalidades</li>
+                                </ul>
+                                <p>Como posso te ajudar hoje?</p>
+                                <span class="message-time">Agora</span>
+                            </div>
+                        </div>
+                        
+                        <div class="message received">
+                            <div class="message-avatar">
+                                <img src="https://ui-avatars.com/api/?name=Suporte&background=4f46e5&color=fff" alt="Suporte">
+                            </div>
+                            <div class="message-content">
+                                <div class="quick-actions">
+                                    <h4>🎯 Ações Rápidas</h4>
+                                    <div class="action-buttons">
+                                        <button class="quick-action-btn">
+                                            <i class="fas fa-chart-line"></i>
+                                            <span>Relatórios</span>
+                                        </button>
+                                        <button class="quick-action-btn">
+                                            <i class="fas fa-cog"></i>
+                                            <span>Configurações</span>
+                                        </button>
+                                        <button class="quick-action-btn">
+                                            <i class="fas fa-question-circle"></i>
+                                            <span>Ajuda</span>
+                                        </button>
+                                        <button class="quick-action-btn">
+                                            <i class="fas fa-lightbulb"></i>
+                                            <span>Dicas</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <span class="message-time">Agora</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="message-input-container">
+                        <button class="emoji-btn" title="Emojis">
+                            <i class="far fa-smile"></i>
+                        </button>
+                        <button class="attachment-btn" title="Anexar arquivo">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <div class="message-input-wrapper">
+                            <input type="text" placeholder="Digite sua pergunta ou solicitação..." id="messageInput">
+                            <button class="send-btn" id="sendMessageBtn" title="Enviar mensagem">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <button class="attach-btn">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                    </div>
+                </div>
+                
+
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/theme-manager.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/sidebar-settings.js"></script>
+    <script src="js/mobile-chat.js"></script>
+    <script src="js/chat-ai.js"></script>
+    <script src="js/erp-chat-ai.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/chat-history.js"></script>
+    <script src="js/dark-mode.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/script.js"></script>
+    
+    <script>
+        // Inicialização dos componentes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar tema
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeToggleText = document.getElementById('themeToggleText');
+
+            if (themeToggle) {
+                const currentTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                if (currentTheme === 'dark') {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                    themeToggleText.textContent = 'Claro';
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                    themeToggleText.textContent = 'Escuro';
+                }
+
+                themeToggle.addEventListener('click', () => {
+                    let newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+
+                    if (newTheme === 'dark') {
+                        themeIcon.classList.remove('fa-moon');
+                        themeIcon.classList.add('fa-sun');
+                        themeToggleText.textContent = 'Claro';
+                    } else {
+                        themeIcon.classList.remove('fa-sun');
+                        themeIcon.classList.add('fa-moon');
+                        themeToggleText.textContent = 'Escuro';
+                    }
+                });
+            }
+            
+            // Inicializar data e hora
+            atualizarDataHora();
+            setInterval(atualizarDataHora, 60000);
+            
+            // Focar no input do chat
+            const messageInput = document.getElementById('messageInput');
+            if (messageInput) {
+                messageInput.focus();
+            }
+        });
+        
+        // Função para atualizar data e hora
+        function atualizarDataHora() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            const dateTimeStr = now.toLocaleDateString('pt-BR', options);
+            const dateTimeElement = document.getElementById('currentDateTime'); // Verifique se este ID existe no seu HTML
+            if (dateTimeElement) {
+                dateTimeElement.textContent = dateTimeStr;
+            }
+        }
+        
+        // Função para enviar mensagem ao pressionar Enter
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                enviarMensagem();
+            }
+        }
+        
+        // Função para enviar mensagem
+        function enviarMensagem() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                // Aqui você deve chamar a função real para adicionar a mensagem ao chat
+                // Por exemplo, se você tem uma função no seu chat.js chamada 'adicionarMensagemAoChat':
+                // adicionarMensagemAoChat(message, 'sent'); 
+                console.log("Mensagem enviada:", message); // Apenas para debug, remova em produção
+                messageInput.value = ''; // Limpa o input após enviar
+            }
+        }
+
+        // Adicionar event listener para o input de mensagem principal
+        document.addEventListener('DOMContentLoaded', () => {
+            const messageInput = document.getElementById('messageInput');
+            const sendMessageBtn = document.getElementById('sendMessageBtn');
+
+            if (messageInput) {
+                messageInput.addEventListener('keydown', handleKeyDown);
+            }
+            if (sendMessageBtn) {
+                sendMessageBtn.addEventListener('click', enviarMensagem);
+            }
+
+            // Inicializar modo noturno
+            if (window.DarkMode) {
+                window.darkMode = new window.DarkMode();
+            }
+        });
+    </script>
+</body>
+</html>

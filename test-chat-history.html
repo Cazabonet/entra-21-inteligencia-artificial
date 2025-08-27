@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste do Sistema de Histórico - Estoca.AI</title>
+    <link rel="stylesheet" href="css/chat-history.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #10b981;
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .status {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .success { background: rgba(16, 185, 129, 0.2); }
+        .error { background: rgba(239, 68, 68, 0.2); }
+        .info { background: rgba(59, 130, 246, 0.2); }
+        
+        .chat-simulator {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+        
+        .chat-input button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .chat-messages {
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .message.user {
+            background: rgba(59, 130, 246, 0.2);
+            margin-left: 20px;
+        }
+        
+        .message.ai {
+            background: rgba(16, 185, 129, 0.2);
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste do Sistema de Histórico</h1>
+        
+        <div class="test-section">
+            <h3>🔧 Testes de Funcionalidade</h3>
+            <button class="test-btn" onclick="testHistorySystem()">
+                🚀 Testar Sistema de Histórico
+            </button>
+            <button class="test-btn" onclick="testAddMessage()">
+                💬 Adicionar Mensagem de Teste
+            </button>
+            <button class="test-btn" onclick="testCategories()">
+                📂 Testar Categorias
+            </button>
+            <button class="test-btn" onclick="testSearch()">
+                🔍 Testar Busca
+            </button>
+            <button class="test-btn" onclick="testExport()">
+                📥 Testar Exportação
+            </button>
+            
+            <div id="testStatus" class="status info">
+                Clique em um botão para testar...
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>💬 Simulador de Chat</h3>
+            <div class="chat-simulator">
+                <div class="chat-input">
+                    <input type="text" id="testMessageInput" placeholder="Digite uma mensagem de teste...">
+                    <button onclick="sendTestMessage()">Enviar</button>
+                </div>
+                
+                <div class="chat-messages" id="testChatMessages">
+                    <div class="message ai">
+                        <strong>AI:</strong> Olá! Sou o assistente de teste. Digite uma mensagem para testar o sistema de histórico.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 Status do Sistema</h3>
+            <div id="systemStatus" class="status info">
+                Verificando status...
+            </div>
+        </div>
+    </div>
+
+    <script src="js/chat-history.js"></script>
+    <script>
+        let chatHistorySystem;
+        let messageCount = 0;
+        
+        // Inicializar sistema
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.ChatHistory) {
+                chatHistorySystem = new window.ChatHistory();
+                updateSystemStatus('✅ Sistema de histórico inicializado com sucesso!');
+            } else {
+                updateSystemStatus('❌ Erro: Classe ChatHistory não encontrada!');
+            }
+        });
+        
+        // Testar sistema de histórico
+        function testHistorySystem() {
+            showStatus('🔄 Testando sistema de histórico...', 'info');
+            
+            try {
+                if (chatHistorySystem) {
+                    // Testar funcionalidades básicas
+                    const testMessage = 'Mensagem de teste ' + Date.now();
+                    const testResponse = 'Resposta de teste ' + Date.now();
+                    
+                    chatHistorySystem.addToHistory(testMessage, testResponse, 'user');
+                    
+                    showStatus('✅ Sistema funcionando! Mensagem adicionada ao histórico.', 'success');
+                    
+                    // Mostrar painel
+                    setTimeout(() => {
+                        chatHistorySystem.show();
+                    }, 1000);
+                    
+                } else {
+                    throw new Error('Sistema não inicializado');
+                }
+            } catch (error) {
+                showStatus(`❌ Erro no teste: ${error.message}`, 'error');
+            }
+        }
+        
+        // Adicionar mensagem de teste
+        function testAddMessage() {
+            showStatus('🔄 Adicionando mensagem de teste...', 'info');
+            
+            try {
+                const testMessages = [
+                    'Como está o estoque hoje?',
+                    'Preciso de um relatório de vendas',
+                                         'Quais são os clientes VIP?',
+                     'Análise financeira do mês'
+                ];
+                
+                const randomMessage = testMessages[Math.floor(Math.random() * testMessages.length)];
+                const randomResponse = `Resposta para: ${randomMessage}`;
+                
+                chatHistorySystem.addToHistory(randomMessage, randomResponse, 'user');
+                
+                showStatus('✅ Mensagem de teste adicionada!', 'success');
+                
+            } catch (error) {
+                showStatus(`❌ Erro: ${error.message}`, 'error');
+            }
+        }
+        
+        // Testar categorias
+        function testCategories() {
+            showStatus('🔄 Testando sistema de categorias...', 'info');
+            
+            try {
+                                 const categories = ['estoque', 'vendas', 'relatorios', 'financeiro', 'geral'];
+                
+                categories.forEach(category => {
+                    const message = `Teste de categoria: ${category}`;
+                    const response = `Resposta para categoria ${category}`;
+                    chatHistorySystem.addToHistory(message, response, 'user');
+                });
+                
+                showStatus('✅ Categorias testadas! Verifique o painel de histórico.', 'success');
+                
+            } catch (error) {
+                showStatus(`❌ Erro: ${error.message}`, 'error');
+            }
+        }
+        
+        // Testar busca
+        function testSearch() {
+            showStatus('🔄 Testando sistema de busca...', 'info');
+            
+            try {
+                // Adicionar mensagens com palavras específicas
+                const searchTerms = ['estoque', 'vendas', 'relatório', 'cliente', 'meta'];
+                
+                searchTerms.forEach(term => {
+                    const message = `Mensagem contendo a palavra: ${term}`;
+                    const response = `Resposta para busca por: ${term}`;
+                    chatHistorySystem.addToHistory(message, response, 'user');
+                });
+                
+                showStatus('✅ Mensagens de busca adicionadas! Use o campo de busca no histórico.', 'success');
+                
+            } catch (error) {
+                showStatus(`❌ Erro: ${error.message}`, 'error');
+            }
+        }
+        
+        // Testar exportação
+        function testExport() {
+            showStatus('🔄 Testando exportação...', 'info');
+            
+            try {
+                if (chatHistorySystem) {
+                    chatHistorySystem.exportHistory();
+                    showStatus('✅ Exportação iniciada! Verifique o download.', 'success');
+                } else {
+                    throw new Error('Sistema não inicializado');
+                }
+            } catch (error) {
+                showStatus(`❌ Erro na exportação: ${error.message}`, 'error');
+            }
+        }
+        
+        // Enviar mensagem de teste
+        function sendTestMessage() {
+            const input = document.getElementById('testMessageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Adicionar mensagem do usuário
+            addTestMessage(message, 'user');
+            
+            // Simular resposta da AI
+            setTimeout(() => {
+                const response = `Resposta simulada para: "${message}"`;
+                addTestMessage(response, 'ai');
+                
+                // Adicionar ao histórico
+                if (chatHistorySystem) {
+                    chatHistorySystem.addToHistory(message, response, 'user');
+                }
+            }, 1000);
+            
+            input.value = '';
+        }
+        
+        // Adicionar mensagem ao chat de teste
+        function addTestMessage(text, type) {
+            const messagesContainer = document.getElementById('testChatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `<strong>${type === 'user' ? 'Usuário' : 'AI'}:</strong> ${text}`;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            messageCount++;
+        }
+        
+        // Mostrar status
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('testStatus');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+        
+        // Atualizar status do sistema
+        function updateSystemStatus(message) {
+            const status = document.getElementById('systemStatus');
+            status.textContent = message;
+            status.className = `status ${message.includes('✅') ? 'success' : 'error'}`;
+        }
+        
+        // Suporte para Enter no input
+        document.getElementById('testMessageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendTestMessage();
+            }
+        });
+    </script>
+</body>
+</html>

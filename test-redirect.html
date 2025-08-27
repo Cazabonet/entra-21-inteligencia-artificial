@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Redirecionamento - Estoca.AI</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .test-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .success { background: rgba(16, 185, 129, 0.2); }
+        .error { background: rgba(239, 68, 68, 0.2); }
+        .info { background: rgba(59, 130, 246, 0.2); }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste de Redirecionamento</h1>
+        <p>Esta página testa se o redirecionamento para o ERP está funcionando.</p>
+        
+        <div>
+            <button class="test-btn" onclick="testRedirect()">
+                🔄 Testar Redirecionamento
+            </button>
+            
+            <button class="test-btn" onclick="testLocalStorage()">
+                💾 Testar LocalStorage
+            </button>
+            
+            <button class="test-btn" onclick="goToERP()">
+                🚀 Ir para ERP
+            </button>
+        </div>
+        
+        <div id="status" class="status info">
+            Clique em um botão para testar...
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        function testRedirect() {
+            showStatus('🔄 Testando redirecionamento...', 'info');
+            
+            try {
+                // Simular dados de login
+                localStorage.setItem('isAuthenticated', 'true');
+                localStorage.setItem('userData', JSON.stringify({
+                    email: 'teste@estoca.ai',
+                    name: 'Usuário Teste',
+                    role: 'User'
+                }));
+                
+                showStatus('✅ Dados salvos no localStorage', 'success');
+                
+                // Tentar redirecionamento
+                setTimeout(() => {
+                    showStatus('🔄 Redirecionando em 3 segundos...', 'info');
+                    
+                    setTimeout(() => {
+                        try {
+                            window.location.href = 'index.html';
+                        } catch (error) {
+                            showStatus(`❌ Erro: ${error.message}`, 'error');
+                        }
+                    }, 3000);
+                }, 1000);
+                
+            } catch (error) {
+                showStatus(`❌ Erro no teste: ${error.message}`, 'error');
+            }
+        }
+
+        function testLocalStorage() {
+            try {
+                const isAuth = localStorage.getItem('isAuthenticated');
+                const userData = localStorage.getItem('userData');
+                
+                if (isAuth && userData) {
+                    showStatus(`✅ LocalStorage OK - Auth: ${isAuth}, User: ${JSON.parse(userData).name}`, 'success');
+                } else {
+                    showStatus('⚠️ LocalStorage vazio ou incompleto', 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Erro no LocalStorage: ${error.message}`, 'error');
+            }
+        }
+
+        function goToERP() {
+            showStatus('🚀 Indo para o ERP...', 'info');
+            
+            // Verificar se existe o arquivo index.html
+            fetch('index.html')
+                .then(response => {
+                    if (response.ok) {
+                        showStatus('✅ index.html encontrado! Redirecionando...', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1000);
+                    } else {
+                        showStatus('❌ index.html não encontrado!', 'error');
+                    }
+                })
+                .catch(error => {
+                    showStatus(`❌ Erro ao verificar index.html: ${error.message}`, 'error');
+                });
+        }
+
+        // Verificar status inicial
+        window.addEventListener('load', () => {
+            const isAuth = localStorage.getItem('isAuthenticated');
+            if (isAuth) {
+                showStatus('✅ Usuário já autenticado!', 'success');
+            } else {
+                showStatus('ℹ️ Nenhum usuário autenticado', 'info');
+            }
+        });
+    </script>
+</body>
+</html>
